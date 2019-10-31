@@ -1,0 +1,56 @@
+version: '1.0'
+services:
+  - name: db
+    type: postgres
+    version: 9.6
+    configuration: StandAlone
+    ports:
+      - 5432
+    username: restya
+    database: restya
+    userPassword: null
+    remoteAccess: false
+    deployTo:
+      - restyaboard
+
+  - name: restyaboard
+    type: docker
+    image: restyaplatform/restyaboard
+    version: v0.6.7
+    ports:
+      - 80
+    remoteAccess: false
+    env:
+      POSTGRES_HOST: "{{=service('db').getMasterAlias()}}"
+      DATABASE_PORT: "{{=service('db').getMainPort()}}"
+      POSTGRES_DB: "{{=service('db').get('database')}}"
+      POSTGRES_USER: "{{=service('db').get('username')}}"
+      POSTGRES_PASSWORD: "{{=service('db').get('userPassword')}}"
+      TZ: "Etc/UTC"
+      SMTP_DOMAIN: null
+      SMTP_USERNAME: null
+      SMTP_PASSWORD: null
+      SMTP_SERVER: null
+      SMTP_PORT: null
+    volumes:
+      - directory: /usr/share/nginx/html/media
+    deployTo:
+      - restyaboard
+
+  - name: web
+    type: nginx
+    version: 1.15
+    ports:
+      - 80
+      - 443
+    remoteAccess: true
+    serviceFiles:
+      - name: restyaboard
+    deployTo:
+      - restyaboard
+
+hosts:
+  - name: restyaboard
+    requirements:
+      cores: 1
+      memory: 1
