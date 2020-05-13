@@ -2,7 +2,7 @@ version: '1.0'
 services:
   - name: db
     type: postgres
-    version: 9.6
+    version: 11.7
     configuration: StandAlone
     ports:
       - 5432
@@ -16,7 +16,7 @@ services:
   - name: restyaboard
     type: docker
     image: restyaplatform/restyaboard
-    version: v0.6.7
+    version: v0.6.8
     ports:
       - 80
     remoteAccess: false
@@ -39,7 +39,7 @@ services:
 
   - name: web
     type: nginx
-    version: 1.15
+    version: 1.17
     ports:
       - 80
       - 443
